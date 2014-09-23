@@ -6,7 +6,7 @@
 
 (defn run []
   (a/go-loop []
-    (let [msg (a/<! p/from-listeners)]
+    (let [msg (a/<! p/from-reactors)]
       (shell/adapter-send msg)
       (recur)))
   (shell/adapter-start))
