@@ -1,5 +1,5 @@
 (ns reacta.scripts.hello
-  (:require [reacta.platform :refer [send]]
+  (:require [reacta.platform :refer [react]]
   	        [reacta.script :refer [on respond]]
   	        [clojure.java.shell :refer [sh]]))
 
@@ -7,10 +7,10 @@
   (println "connected!"))
 
 (respond #"hello"
-  (send {:type :message :content "hello"}))
+  (react {:type :message :content "hello"}))
 
 (respond #"time"
-  (send {:type :message :content (clojure.string/trim-newline (:out (sh "date")))}))
+  (react {:type :message :content (clojure.string/trim-newline (:out (sh "date")))}))
 
 (on :close [_]
   (println "closed!"))

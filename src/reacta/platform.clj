@@ -1,5 +1,4 @@
 (ns reacta.platform
-  (:refer-clojure :exclude [send])
   (:require [clojure.core.async :as a]))
 
 (def to-listeners (a/chan))
@@ -14,5 +13,5 @@
 
 (def from-listeners (a/chan 10))
 
-(defn send [msg]
+(defn react [msg]
   (a/>!! from-listeners msg))
