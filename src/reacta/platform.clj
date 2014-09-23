@@ -12,3 +12,11 @@
 
 (defn react [msg]
   (a/>!! from-reactors msg))
+
+(defn add-reactor! [event f]
+  (let [ch (a/chan 10)]
+    (a/sub pub event ch)
+    (a/go-loop []
+      (let [v (a/<! ch)]
+        (f v)
+        (recur)))))

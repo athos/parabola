@@ -1,14 +1,8 @@
 (ns reacta.script
-  (:require [clojure.core.async :as a]
-            [reacta.platform :refer [pub]]))
+  (:require [reacta.platform :as p]))
 
 (defmacro on [type arg & body]
-  `(let [ch# (a/chan 10)]
-     (a/sub pub ~type ch#)
-     (a/go-loop []
-       (let [v# (a/<! ch#)]
-         ((fn ~arg ~@body) v#)
-         (recur)))))
+  `(p/add-reactor! ~type (fn ~arg ~@body)))
 
 (defmacro respond [bindings & body]
   (let [regex? (instance? java.util.regex.Pattern bindings)
