@@ -6,6 +6,11 @@
             [reacta.adapters.shell :as shell]
             reacta.scripts.hello))
 
+(extend-protocol comp/Lifecycle
+  reacta.adapter.Lifecycle
+  (start [this] (adapter/start this))
+  (stop [this] (adapter/stop this)))
+
 (def adapter (shell/->ShellAdapter))
 
 (defn run []

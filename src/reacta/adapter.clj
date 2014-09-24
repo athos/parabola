@@ -9,6 +9,10 @@
   (topic [this msg])
   (play [this msg]))
 
+(defprotocol Lifecycle
+  (start [this])
+  (stop [this]))
+
 (defn emit [event & more]
   (apply p/emit event more))
 

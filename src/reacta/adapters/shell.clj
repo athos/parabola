@@ -1,6 +1,5 @@
 (ns reacta.adapters.shell
-  (:require [reacta.adapter :as adapter]
-            [com.stuartsierra.component :as comp]))
+  (:require [reacta.adapter :as adapter]))
 
 (defn print-prompt []
   (print "=> ")
@@ -12,7 +11,7 @@
     (printf "\u001b[01;32m%s\u001b[0m\n" (:content msg))
     (print-prompt))
 
-  comp/Lifecycle
+  adapter/Lifecycle
   (start [this]
     (adapter/emit :connected)
     (print-prompt)
