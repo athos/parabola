@@ -11,7 +11,7 @@
   (start [this] (adapter/start this))
   (stop [this] (adapter/stop this)))
 
-(def adapter (shell/->ShellAdapter))
+(def adapter (shell/shell))
 
 (defn run []
   (a/go-loop []

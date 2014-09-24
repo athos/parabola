@@ -22,3 +22,6 @@
           (adapter/receive line)
           (recur))))
     (adapter/emit :close)))
+
+(defn shell []
+  (->ShellAdapter))
