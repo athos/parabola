@@ -5,7 +5,8 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/core.async "0.1.338.0-5c5012-alpha"]
-                 [com.stuartsierra/component "0.2.2"]]
+                 [com.stuartsierra/component "0.2.2"]
+                 [bultitude "0.2.6"]]
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.6"]
                                   [com.cemerick/pomegranate "0.3.0"]]
                    :source-paths ["dev"]}}
