@@ -1,14 +1,17 @@
 (ns reacta.script
-  (:require [reacta.platform :as p]))
+  (:require [reacta.reactor :as r]))
 
-(defmacro on [type arg & body]
-  `(p/add-reactor! ~type (fn ~arg ~@body)))
+(defn emit-reactor [event robot ch bindings body]
+  `(r/->Reactor ~event ~robot ~ch (fn ~bindings ~@body)))
 
-(defmacro respond [bindings & body]
-  (let [regex? (instance? java.util.regex.Pattern bindings)
-        names (if regex? [] (first bindings))
-        regex (if regex? bindings (second bindings))]
-   `(on :message [msg#]
-      (let [[match# ~@names] (re-find ~regex (:content msg#))]
-        (when-not (nil? match#)
-          ~@body)))))
+(defmacro defreactor [stimulus bindings & body]
+  (let [robot (first bindings)
+        ch (gensym 'ch)]
+   `(defn ~(with-meta (gensym 'reactor) {:reactor true}) [~robot ~ch]
+      ~(if (instance? java.util.regex.Pattern stimulus)
+         (let [msg (gensym 'msg)]
+           (emit-reactor :message robot ch [msg]
+             `((let [[match# ~@(rest bindings)] (re-find ~stimulus (:content ~msg))]
+                 (when-not (nil? match#)
+                   ~@body)))))
+         (emit-reactor stimulus robot ch (vec (rest bindings)) body)))))

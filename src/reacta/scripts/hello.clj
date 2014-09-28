@@ -1,16 +1,16 @@
 (ns reacta.scripts.hello
   (:require [reacta.platform :refer [react]]
-  	        [reacta.script :refer [on respond]]
-  	        [clojure.java.shell :refer [sh]]))
+            [reacta.script :refer [defreactor]]
+            [clojure.java.shell :refer [sh]]))
 
-(on :connected [_]
+(defreactor :connected [robot message]
   (println "connected!"))
 
-(respond #"hello"
+(defreactor #"hello" [robot]
   (react {:type :message :content "hello"}))
 
-(respond #"time"
+(defreactor #"time" [robot]
   (react {:type :message :content (clojure.string/trim-newline (:out (sh "date")))}))
 
-(on :close [_]
+(defreactor :close [robot message]
   (println "closed!"))
