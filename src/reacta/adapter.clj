@@ -1,6 +1,6 @@
 (ns reacta.adapter
   (:refer-clojure :exclude [send])
-  (:require [reacta.platform :as p]))
+  (:require [reacta.communication :as comm]))
 
 (defprotocol Adapter
   (send [this msg])
@@ -14,7 +14,7 @@
   (stop [this]))
 
 (defn emit [event & more]
-  (apply p/emit event more))
+  (apply comm/emit event more))
 
 (defn receive [msg]
-  (p/emit :message :content msg))
+  (comm/emit :message :content msg))

@@ -1,5 +1,5 @@
 (ns reacta.scripts.hello
-  (:require [reacta.platform :refer [react]]
+  (:require [reacta.communication :refer [react]]
             [reacta.script :refer [defreactor]]
             [clojure.java.shell :refer [sh]]))
 

@@ -1,4 +1,4 @@
-(ns reacta.platform
+(ns reacta.communication
   (:require [clojure.core.async :as a]))
 
 (def to-reactors (a/chan))
