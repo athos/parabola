@@ -2,7 +2,7 @@
   (:require [clojure.tools.namespace.repl :refer [refresh refresh-all]]
             [clojure.repl :refer :all]
             [clojure.pprint :refer [pp pprint]]
-            [reacta.core :refer :all]
+            [reacta.main :refer :all]
             [com.stuartsierra.component :as comp]))
 
 (def system nil)

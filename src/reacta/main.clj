@@ -1,4 +1,4 @@
-(ns reacta.core
+(ns reacta.main
   (:require [clojure.core.async :as a]
             [com.stuartsierra.component :as comp]
             [reacta.adapter :as adapter]
