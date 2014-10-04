@@ -32,8 +32,8 @@
           (assoc this :adapters nil))
       this)))
 
-(defn new-adapter-loader [robot prefix names]
-  (map->AdapterLoader {:robot robot :prefix prefix :names names}))
+(defn new-adapter-loader [prefix names]
+  (map->AdapterLoader {:prefix prefix :names names}))
 
 (defn start-adapters [loader]
   (doseq [[_ adapter] (:adapters loader)]

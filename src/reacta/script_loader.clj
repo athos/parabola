@@ -39,5 +39,5 @@
           (assoc this :scripts nil))
       this)))
 
-(defn new-script-loader [robot prefix]
-  (map->ScriptLoader {:robot robot :prefix prefix}))
+(defn new-script-loader [prefix]
+  (map->ScriptLoader {:prefix prefix}))

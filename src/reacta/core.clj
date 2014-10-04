@@ -9,15 +9,20 @@
 (def ^:const ADAPTER_PREFIX "reacta.adapters")
 (def ^:const SCRIPT_PREFIX "reacta.scripts")
 
-(def adapter-loader (atom (adapters/new-adapter-loader {} ADAPTER_PREFIX #{:shell})))
+(defn reacta-system []
+  (comp/system-map
+    :robot {}
+    :adapter-loader (comp/using
+                      (adapters/new-adapter-loader ADAPTER_PREFIX #{:shell})
+                      [:robot])
+    :script-loader (comp/using
+                     (scripts/new-script-loader SCRIPT_PREFIX)
+                     [:robot])))
 
-(def script-loader (scripts/new-script-loader {} SCRIPT_PREFIX))
-(comp/start script-loader)
-
-(defn run []
-  (a/go-loop []
-    (let [msg (a/<! p/from-reactors)]
-      (adapter/send (:shell (:adapters @adapter-loader)) msg)
-      (recur)))
-  (swap! adapter-loader comp/start)
-  (adapters/start-adapters @adapter-loader))
+(defn run [system]
+  (let [{:keys [adapter-loader]} system]
+    (a/go-loop []
+      (let [msg (a/<! p/from-reactors)]
+        (adapter/send (:shell (:adapters adapter-loader)) msg)
+        (recur)))
+    (adapters/start-adapters adapter-loader)))
