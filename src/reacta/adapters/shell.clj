@@ -21,7 +21,8 @@
         (when-not (or (nil? line) (= line "exit"))
           (adapter/receive robot line)
           (recur))))
-    (adapter/emit robot :close)))
+    (adapter/emit robot :close))
+  (stop [this]))
 
 (defn shell [robot]
   (->ShellAdapter robot))
