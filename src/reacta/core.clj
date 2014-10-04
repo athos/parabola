@@ -1,6 +1,5 @@
 (ns reacta.core
   (:require [clojure.core.async :as a]
-            [reacta.communication :as comm]
             [com.stuartsierra.component :as comp]
             [reacta.adapter :as adapter]
             [reacta.robot :as robot]
@@ -21,9 +20,9 @@
                      [:robot])))
 
 (defn run [system]
-  (let [{:keys [adapter-loader]} system]
+  (let [{:keys [robot adapter-loader]} system]
     (a/go-loop []
-      (let [msg (a/<! comm/from-reactors)]
+      (let [msg (a/<! (-> robot :channels :from-reactors))]
         (adapter/send (:shell (:adapters adapter-loader)) msg)
         (recur)))
     (adapters/start-adapters adapter-loader)))

@@ -5,7 +5,7 @@
   (print "=> ")
   (flush))
 
-(defrecord ShellAdapter []
+(defrecord ShellAdapter [robot]
   adapter/Adapter
   (send [this msg]
     (printf "\u001b[01;32m%s\u001b[0m\n" (:content msg))
@@ -13,15 +13,15 @@
 
   adapter/Lifecycle
   (start [this]
-    (adapter/emit :connected)
+    (adapter/emit robot :connected)
     (print-prompt)
     (loop []
       (let [line (read-line)]
         (print-prompt)
         (when-not (or (nil? line) (= line "exit"))
-          (adapter/receive line)
+          (adapter/receive robot line)
           (recur))))
-    (adapter/emit :close)))
+    (adapter/emit robot :close)))
 
-(defn shell []
-  (->ShellAdapter))
+(defn shell [robot]
+  (->ShellAdapter robot))

@@ -1,6 +1,5 @@
 (ns reacta.reactor
-  (:require [reacta.communication :as comm]
-            [clojure.core.async :as a]
+  (:require [clojure.core.async :as a]
             [com.stuartsierra.component :as comp]))
 
 (defn wrap [proc]
@@ -12,7 +11,7 @@
 (defrecord Reactor [event robot ch proc]
   comp/Lifecycle
   (start [this]
-    (a/sub comm/pub event ch)
+    (a/sub (-> robot :channels :reactors-pub) event ch)
     (a/go-loop []
       (let [msg (a/<! ch)]
         (when ((wrap proc) msg)
