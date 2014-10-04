@@ -3,6 +3,7 @@
             [reacta.communication :as comm]
             [com.stuartsierra.component :as comp]
             [reacta.adapter :as adapter]
+            [reacta.robot :as robot]
             [reacta.adapter-loader :as adapters]
             [reacta.script-loader :as scripts]))
 
@@ -11,7 +12,7 @@
 
 (defn reacta-system []
   (comp/system-map
-    :robot {}
+    :robot (robot/new-robot {})
     :adapter-loader (comp/using
                       (adapters/new-adapter-loader ADAPTER_PREFIX #{:shell})
                       [:robot])
