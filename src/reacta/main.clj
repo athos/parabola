@@ -11,12 +11,13 @@
 
 (defn reacta-system []
   (comp/system-map
-    :robot (robot/new-robot {})
+    :robot (robot/new-robot {:adapter-prefix ADAPTER_PREFIX
+                             :script-prefix SCRIPT_PREFIX})
     :adapter-loader (comp/using
-                      (adapters/new-adapter-loader ADAPTER_PREFIX #{:shell})
+                      (adapters/new-adapter-loader #{:shell})
                       [:robot])
     :script-loader (comp/using
-                     (scripts/new-script-loader SCRIPT_PREFIX)
+                     (scripts/new-script-loader)
                      [:robot])))
 
 (defn run [system]

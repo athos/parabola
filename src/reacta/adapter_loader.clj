@@ -5,25 +5,26 @@
 (defn symbol-concat [& syms]
   (symbol (apply str syms)))
 
-(defn load-adapter [robot prefix adapter-name]
+(defn load-adapter [robot adapter-name]
   (let [name (if (instance? clojure.lang.Named adapter-name)
                (name adapter-name)
                (str adapter-name))
+        prefix (-> robot :config :adapter-prefix)
         ns-name (symbol-concat prefix '. name)]
     (require ns-name)
     (when-let [v (find-var (symbol-concat ns-name '/ name))]
       (@v robot))))
 
-(defn load-adapters [robot prefix names]
+(defn load-adapters [robot names]
   (->> (for [name names]
-         [name (load-adapter robot prefix name)])
+         [name (load-adapter robot name)])
        (into {})))
 
-(defrecord AdapterLoader [robot prefix names adapters]
+(defrecord AdapterLoader [robot names adapters]
   comp/Lifecycle
   (start [this]
     (if-not adapters
-      (assoc this :adapters (load-adapters robot prefix names))
+      (assoc this :adapters (load-adapters robot names))
       this))
   (stop [this]
     (if adapters
@@ -32,8 +33,8 @@
           (assoc this :adapters nil))
       this)))
 
-(defn new-adapter-loader [prefix names]
-  (map->AdapterLoader {:prefix prefix :names names}))
+(defn new-adapter-loader [names]
+  (map->AdapterLoader {:names names}))
 
 (defn start-adapters [loader]
   (doseq [[_ adapter] (:adapters loader)]
