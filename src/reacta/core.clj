@@ -3,26 +3,13 @@
             [reacta.platform :as p]
             [com.stuartsierra.component :as comp]
             [reacta.adapter :as adapter]
+            [reacta.adapter-loader :as adapters]
             [reacta.script-loader :as scripts]))
 
 (def ^:const ADAPTER_PREFIX "reacta.adapters")
 (def ^:const SCRIPT_PREFIX "reacta.scripts")
 
-(defn symbol-concat [& syms]
-  (symbol (apply str syms)))
-
-(defn load-adapter [name]
-  (let [ns-name (symbol-concat ADAPTER_PREFIX '. name)]
-    (require ns-name)
-    (when-let [v (find-var (symbol-concat ns-name '/ name))]
-      (@v))))
-
-(extend-protocol comp/Lifecycle
-  reacta.adapter.Lifecycle
-  (start [this] (adapter/start this))
-  (stop [this] (adapter/stop this)))
-
-(def adapter (load-adapter "shell"))
+(def adapter-loader (atom (adapters/new-adapter-loader {} ADAPTER_PREFIX #{:shell})))
 
 (def script-loader (scripts/new-script-loader {} SCRIPT_PREFIX))
 (comp/start script-loader)
@@ -30,6 +17,7 @@
 (defn run []
   (a/go-loop []
     (let [msg (a/<! p/from-reactors)]
-      (adapter/send adapter msg)
+      (adapter/send (:shell (:adapters @adapter-loader)) msg)
       (recur)))
-  (comp/start adapter))
+  (swap! adapter-loader comp/start)
+  (adapters/start-adapters @adapter-loader))
