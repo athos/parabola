@@ -1,6 +1,5 @@
 (ns reacta.scripts.hello
-  (:require [reacta.robot :refer [react]]
-            [reacta.script :refer [defreactor]]
+  (:require [reacta.script :refer [defreactor react]]
             [clojure.java.shell :refer [sh]]))
 
 (defreactor :connected [robot message]

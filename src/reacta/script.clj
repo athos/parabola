@@ -1,5 +1,6 @@
 (ns reacta.script
-  (:require [reacta.reactor :as r]))
+  (:require [reacta.reactor :as r]
+            [reacta.robot :as robot]))
 
 (defn emit-reactor [event robot ch bindings body]
   `(r/->Reactor ~event ~robot ~ch (fn ~bindings ~@body)))
@@ -15,3 +16,6 @@
                  (when-not (nil? match#)
                    ~@body)))))
          (emit-reactor stimulus robot ch (vec (rest bindings)) body)))))
+
+(defn react [robot msg]
+  (robot/react robot msg))
