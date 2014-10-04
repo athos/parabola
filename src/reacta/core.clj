@@ -2,8 +2,8 @@
   (:require [clojure.core.async :as a]
             [reacta.platform :as p]
             [com.stuartsierra.component :as comp]
-            [bultitude.core :refer [namespaces-on-classpath]]
-            [reacta.adapter :as adapter]))
+            [reacta.adapter :as adapter]
+            [reacta.script-loader :as scripts]))
 
 (def ^:const ADAPTER_PREFIX "reacta.adapters")
 (def ^:const SCRIPT_PREFIX "reacta.scripts")
@@ -24,38 +24,8 @@
 
 (def adapter (load-adapter "shell"))
 
-(defrecord Script [ns reactors]
-  comp/Lifecycle
-  (start [this]
-    (doseq [reactor reactors]
-      (comp/start reactor))
-    this)
-  (stop [this]
-    (doseq [reactor reactors]
-      (comp/stop reactor))
-    this))
-
-(defn script-reactors [robot ns-name]
-  (vec (for [reactor (filter (comp :reactor meta) (vals (ns-publics ns-name)))]
-         (reactor robot (a/chan 2)))))
-
-(defn load-scripts [robot]
-  (->> (for [ns-name (namespaces-on-classpath :prefix SCRIPT_PREFIX)]
-         (do (require ns-name)
-             (->Script ns-name (script-reactors robot ns-name))))
-       (into [])
-       (assoc robot :scripts)))
-
-(defn start-scripts [robot]
-  (doseq [script (:scripts robot)]
-    (comp/start script)))
-
-(defn stop-scripts [robot]
-  (doseq [script (:scripts robot)]
-    (comp/stop script)))
-
-(def robot (load-scripts {}))
-(start-scripts robot)
+(def script-loader (scripts/new-script-loader {} SCRIPT_PREFIX))
+(comp/start script-loader)
 
 (defn run []
   (a/go-loop []
