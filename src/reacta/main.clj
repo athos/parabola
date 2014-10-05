@@ -1,7 +1,5 @@
 (ns reacta.main
-  (:require [clojure.core.async :as a]
-            [com.stuartsierra.component :as comp]
-            [reacta.adapter :as adapter]
+  (:require [com.stuartsierra.component :as comp]
             [reacta.robot :as robot]
             [reacta.forwarder :as forward]
             [reacta.adapter-loader :as adapters]
