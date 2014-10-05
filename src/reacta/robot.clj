@@ -20,9 +20,9 @@
   (map->Robot {:config config}))
 
 (defn emit [robot event & more]
-  (a/>!! (get-in robot [:channels :to-reactors]) (apply array-map :type event more))
+  (a/>!! (-> robot :channels :to-reactors) (apply array-map :type event more))
   nil)
 
 (defn react [robot msg]
-  (a/>!! (get-in robot [:channels :from-reactors]) msg)
+  (a/>!! (-> robot :channels :from-reactors) msg)
   nil)
