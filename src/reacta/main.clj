@@ -3,6 +3,7 @@
             [com.stuartsierra.component :as comp]
             [reacta.adapter :as adapter]
             [reacta.robot :as robot]
+            [reacta.forwarder :as forward]
             [reacta.adapter-loader :as adapters]
             [reacta.script-loader :as scripts]))
 
@@ -18,12 +19,10 @@
                       [:robot])
     :script-loader (comp/using
                      (scripts/new-script-loader)
-                     [:robot])))
+                     [:robot])
+    :forwarder (comp/using
+                 (forward/new-forwarder :shell)
+                 [:robot :adapter-loader])))
 
 (defn run [system]
-  (let [{:keys [robot adapter-loader]} system]
-    (a/go-loop []
-      (let [msg (a/<! (-> robot :channels :from-reactors))]
-        (adapter/send (:shell (:adapters adapter-loader)) msg)
-        (recur)))
-    (adapters/start-adapters adapter-loader)))
+  (adapters/start-adapters (:adapter-loader system)))
