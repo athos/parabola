@@ -3,19 +3,13 @@
   (:import [twitter4j TwitterStream TwitterStreamFactory Status UserStreamListener]
            [twitter4j.conf Configuration ConfigurationBuilder]))
 
-(defn make-config [credentials]
-  (let [{:keys [consumer-key consumer-secret access-token access-token-secret]}
-        credentials]
-    (-> (ConfigurationBuilder.)
-        (.setOAuthConsumerKey consumer-key)
-        (.setOAuthConsumerSecret consumer-secret)
-        (.setOAuthAccessToken access-token)
-        (.setOAuthAccessTokenSecret access-token-secret)
-        .build)))
-
-(defn make-stream [credentials]
-  (let [config (make-config credentials)]
-    (.getInstance (TwitterStreamFactory. config))))
+(defn make-config [consumer-key consumer-secret access-token access-token-secret]
+  (-> (ConfigurationBuilder.)
+      (.setOAuthConsumerKey consumer-key)
+      (.setOAuthConsumerSecret consumer-secret)
+      (.setOAuthAccessToken access-token)
+      (.setOAuthAccessTokenSecret access-token-secret)
+      .build))
 
 (defn make-listener []
   (reify UserStreamListener
@@ -54,14 +48,15 @@
         (println "sending:" (:content msg)))
       adapter/Lifecycle
       (start [this]
-        (let [credentials {:consumer-key (get-env "TWITTER_CONSUMER_KEY")
-                           :consumer-secret (get-env "TWITTER_CONSUMER_SECRET")
-                           :access-token (get-env "TWITTER_ACCESS_TOKEN")
-                           :access-token-secret (get-env "TWITTER_ACCESS_TOKEN_SECRET")}
-              new-stream (make-stream credentials)
+        (let [config (make-config (get-env "TWITTER_CONSUMER_KEY")
+                                  (get-env "TWITTER_CONSUMER_SECRET")
+                                  (get-env "TWITTER_ACCESS_TOKEN")
+                                  (get-env "TWITTER_ACCESS_TOKEN_SECRET"))
+              new-stream (identity (.getInstance (TwitterStreamFactory. config)))
               listener (make-listener)]
           (reset! stream new-stream)
           (.addListener new-stream listener)
           (.user new-stream)))
       (stop [this]
-        (.shutdown @stream)))))
+        (.shutdown @stream)
+        (reset! stream new-stream)))))
