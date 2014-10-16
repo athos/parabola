@@ -1,6 +1,6 @@
 (ns reacta.adapters.twitter
   (:require [reacta.adapter :as adapter])
-  (:import [twitter4j TwitterStream TwitterStreamFactory Status UserStreamListener]
+  (:import [twitter4j TwitterFactory TwitterStream TwitterStreamFactory Status UserStreamListener]
            [twitter4j.conf Configuration ConfigurationBuilder]))
 
 (defn make-config [consumer-key consumer-secret access-token access-token-secret]
@@ -11,11 +11,12 @@
       (.setOAuthAccessTokenSecret access-token-secret)
       .build))
 
-(defn make-listener []
+(defn make-listener [robot]
   (reify UserStreamListener
     (onDeletionNotice [this _])
     (onScrubGeo [this _ _])
-    (onStatus [this status]
+    (^void onStatus [this ^Status status]
+      (adapter/receive robot (.getText status))
       (println status))
     (onTrackLimitationNotice [this _])
     (onException [this _])
@@ -41,11 +42,13 @@
   (get (System/getenv) var-name))
 
 (defn twitter [robot]
-  (let [stream (atom nil)]
+  (let [stream (ref nil)
+        twitter (ref nil)]
     (reify
       adapter/Adapter
       (send [this msg]
-        (println "sending:" (:content msg)))
+        (println "sending:" (:content msg))
+        (.updateStatus @twitter (:content msg)))
       adapter/Lifecycle
       (start [this]
         (let [config (make-config (get-env "TWITTER_CONSUMER_KEY")
@@ -53,10 +56,15 @@
                                   (get-env "TWITTER_ACCESS_TOKEN")
                                   (get-env "TWITTER_ACCESS_TOKEN_SECRET"))
               new-stream (identity (.getInstance (TwitterStreamFactory. config)))
-              listener (make-listener)]
-          (reset! stream new-stream)
+              listener (make-listener robot)
+              new-twitter (.getInstance (TwitterFactory. config))]
+          (dosync
+            (ref-set stream new-stream)
+            (ref-set twitter new-twitter))
           (.addListener new-stream listener)
           (.user new-stream)))
       (stop [this]
         (.shutdown @stream)
-        (reset! stream new-stream)))))
+        (dosync
+          (ref-set twitter nil)
+          (ref-set stream nil))))))
