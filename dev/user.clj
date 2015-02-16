@@ -18,7 +18,8 @@
 
 (defn go []
   (init)
-  (start))
+  (start)
+  (run system))
 
 (defn reset []
   (stop)

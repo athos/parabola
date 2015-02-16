@@ -10,6 +10,7 @@
   (play [this msg]))
 
 (defprotocol Lifecycle
+  (init [this])
   (start [this])
   (stop [this]))
 

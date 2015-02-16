@@ -12,6 +12,7 @@
     (print-prompt))
 
   adapter/Lifecycle
+  (init [this] this)
   (start [this]
     (adapter/emit robot :connected)
     (print-prompt)

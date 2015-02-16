@@ -1,6 +1,7 @@
 (ns reacta.adapters.twitter
-  (:require [reacta.adapter :as adapter])
-  (:import [twitter4j TwitterFactory TwitterStream TwitterStreamFactory Status UserStreamListener]
+  (:require [environ.core :refer [env]]
+            [reacta.adapter :as adapter])
+  (:import [twitter4j TwitterFactory Twitter TwitterStream TwitterStreamFactory Status UserStreamListener]
            [twitter4j.conf Configuration ConfigurationBuilder]))
 
 (defn make-config [consumer-key consumer-secret access-token access-token-secret]
@@ -38,33 +39,27 @@
     (onUserListUpdate [this _ _])
     (onUserProfileUpdate [this _])))
 
-(defn get-env [var-name]
-  (get (System/getenv) var-name))
+(defrecord TwitterAdapter [robot ^Twitter twitter ^TwitterStream stream]
+  adapter/Adapter
+  (send [this msg]
+    (println "sending:" (:content msg))
+    (.updateStatus twitter ^String (:content msg)))
+  adapter/Lifecycle
+  (init [this]
+    (let [^Configuration config (make-config (env :twitter-consumer-key)
+                                             (env :twitter-consumer-secret)
+                                             (env :twitter-access-token)
+                                             (env :twitter-access-token-secret))
+          stream (identity (.getInstance (TwitterStreamFactory. config)))
+          listener (make-listener robot)
+          twitter (.getInstance (TwitterFactory. config))]
+      (.addListener stream listener)
+      (assoc this :twitter twitter :stream stream)))
+  (start [this]
+    (.user stream))
+  (stop [this]
+    (.shutdown stream)
+    (assoc this :stream nil :twitter nil)))
 
 (defn twitter [robot]
-  (let [stream (ref nil)
-        twitter (ref nil)]
-    (reify
-      adapter/Adapter
-      (send [this msg]
-        (println "sending:" (:content msg))
-        (.updateStatus @twitter (:content msg)))
-      adapter/Lifecycle
-      (start [this]
-        (let [config (make-config (get-env "TWITTER_CONSUMER_KEY")
-                                  (get-env "TWITTER_CONSUMER_SECRET")
-                                  (get-env "TWITTER_ACCESS_TOKEN")
-                                  (get-env "TWITTER_ACCESS_TOKEN_SECRET"))
-              new-stream (identity (.getInstance (TwitterStreamFactory. config)))
-              listener (make-listener robot)
-              new-twitter (.getInstance (TwitterFactory. config))]
-          (dosync
-            (ref-set stream new-stream)
-            (ref-set twitter new-twitter))
-          (.addListener new-stream listener)
-          (.user new-stream)))
-      (stop [this]
-        (.shutdown @stream)
-        (dosync
-          (ref-set twitter nil)
-          (ref-set stream nil))))))
+  (map->TwitterAdapter {:robot robot}))

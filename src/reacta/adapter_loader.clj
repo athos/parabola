@@ -13,7 +13,7 @@
         ns-name (symbol-concat prefix '. name)]
     (require ns-name)
     (when-let [v (find-var (symbol-concat ns-name '/ name))]
-      (@v robot))))
+      (adapter/init (@v robot)))))
 
 (defn load-adapters [robot names]
   (->> (for [name names]
