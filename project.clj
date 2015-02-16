@@ -8,7 +8,8 @@
                  [com.stuartsierra/component "0.2.2"]
                  [bultitude "0.2.6"]
                  [org.twitter4j/twitter4j-core "4.0.2"]
-                 [org.twitter4j/twitter4j-stream "4.0.2"]]
+                 [org.twitter4j/twitter4j-stream "4.0.2"]
+                 [environ "1.0.0"]]
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.6"]
                                   [com.cemerick/pomegranate "0.3.0"]]
                    :source-paths ["dev"]}}
