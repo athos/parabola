@@ -13,13 +13,13 @@
     :robot (robot/new-robot {:adapter-prefix ADAPTER_PREFIX
                              :script-prefix SCRIPT_PREFIX})
     :adapter-loader (comp/using
-                      (adapters/new-adapter-loader #{:twitter})
+                      (adapters/new-adapter-loader #{:slack})
                       [:robot])
     :script-loader (comp/using
                      (scripts/new-script-loader)
                      [:robot])
     :forwarder (comp/using
-                 (forward/new-forwarder :twitter)
+                 (forward/new-forwarder :slack)
                  [:robot :adapter-loader])))
 
 (defn run [system]
