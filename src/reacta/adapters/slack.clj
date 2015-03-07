@@ -10,15 +10,16 @@
 (def slack-api-token (env :slack-api-token))
 (def slack-connection {:api-url slack-api-url :token slack-api-token})
 
-(defrecord SlackAdapter [robot stream closed?]
+(defrecord SlackAdapter [robot stream users closed?]
   adapter/Adapter
   (send [this msg]
     (println "seinding message:" msg))
   adapter/Lifecycle
   (init [this]
-    (let [url (:url (rtm/start slack-connection))
+    (let [{:keys [url users]} (rtm/start slack-connection)
+          users (reduce (fn [m {:keys [id name]}] (assoc m id name)) {} users)
           stream @(http/websocket-client url)]
-      (assoc this :stream stream :closed? (atom false))))
+      (assoc this :stream stream :users users :closed? (atom false))))
   (start [this]
     (reset! closed? false)
     (loop []
