@@ -11,18 +11,30 @@
 (def slack-connection {:api-url slack-api-url :token slack-api-token})
 
 (defn- extract [src]
-  (reduce (fn [m {:keys [id name]}] (assoc m id name)) {} src))
+  (let [m (reduce (fn [m {:keys [id name]}] (assoc m id name)) {} src)]
+    {:id->name m
+     :name->id (zipmap (vals m) (keys m))}))
 
 (defrecord SlackAdapter [robot stream channels users closed?]
   adapter/Adapter
   (send [this msg]
-    (println "seinding message:" msg))
+    (when-not @closed?
+      (case (:type msg)
+        :message
+        #_=> (let [json {:id (rand-int Integer/MAX_VALUE)
+                         :type :message
+                         :channel (get-in channels [:name->id "random"])
+                         :text (:content msg)}]
+               (println "seinding message:" json)
+               (s/try-put! (s/->sink stream) (json/write-str json) 10000))
+        nil)))
   adapter/Lifecycle
   (init [this]
     (let [{:keys [url channels users]} (rtm/start slack-connection)
           chans (extract channels)
           users (extract users)
           stream @(http/websocket-client url)]
+      (clojure.pprint/pprint chans)
       (assoc this :stream stream :channels chans :users users :closed? (atom false))))
   (start [this]
     (reset! closed? false)
