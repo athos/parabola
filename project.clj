@@ -15,7 +15,8 @@
                  [org.clojure/data.json "0.2.5"]
                  [environ "1.0.0"]
                  [com.taoensso/timbre "3.3.1"]]
-  :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.6"]
+  :profiles {:dev {:env {:dev true}
+                   :dependencies [[org.clojure/tools.namespace "0.2.6"]
                                   [com.cemerick/pomegranate "0.3.0"]]
                    :source-paths ["dev"]}}
   :global-vars {*warn-on-reflection* true})
