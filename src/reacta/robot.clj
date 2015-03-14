@@ -17,7 +17,8 @@
   (stop [this]
     (timbre/info "stopped robot")
     (if channels
-      (assoc this :channels nil))))
+      (assoc this :channels nil)
+      this)))
 
 (defn new-robot [config]
   (map->Robot {:config config}))
