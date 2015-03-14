@@ -26,5 +26,3 @@
                  (forward/new-forwarder :slack)
                  [:robot :logger :adapter-loader])))
 
-(defn run [system]
-  (adapters/start-adapters (:adapter-loader system)))
