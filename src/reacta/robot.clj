@@ -1,6 +1,7 @@
 (ns reacta.robot
   (:require [com.stuartsierra.component :as comp]
-            [clojure.core.async :as a]))
+            [clojure.core.async :as a]
+            [taoensso.timbre :as timbre]))
 
 (defrecord Robot [channels config]
   comp/Lifecycle
@@ -10,9 +11,11 @@
             channels {:to-reactors ch,
                       :reactors-pub (a/pub ch :type)
                       :from-reactors (a/chan 10)}]
+        (timbre/info "started robot")
         (assoc this :channels channels))
       this))
   (stop [this]
+    (timbre/info "stopping robot ...")
     (if channels
       (assoc this :channels nil))))
 
