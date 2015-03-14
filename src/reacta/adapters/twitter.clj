@@ -1,6 +1,7 @@
 (ns reacta.adapters.twitter
   (:require [environ.core :refer [env]]
-            [reacta.adapter :as adapter])
+            [reacta.adapter :as adapter]
+            [taoensso.timbre :as timbre])
   (:import [twitter4j TwitterFactory Twitter TwitterStream TwitterStreamFactory Status UserStreamListener]
            [twitter4j.conf Configuration ConfigurationBuilder]))
 
@@ -54,11 +55,14 @@
           listener (make-listener robot)
           twitter (.getInstance (TwitterFactory. config))]
       (.addListener stream listener)
+      (timbre/debug "init twitter adapter")
       (assoc this :twitter twitter :stream stream)))
   (start [this]
+    (timbre/debug "starting twitter adapter ...")
     (.user stream))
   (stop [this]
     (.shutdown stream)
+    (timbre/debug "stopped twitter adapter")
     (assoc this :stream nil :twitter nil)))
 
 (defn twitter [robot]
