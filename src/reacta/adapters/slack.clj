@@ -55,7 +55,7 @@
   (stop [this]
     (reset! closed? true)
     (s/close! stream)
-    (timbre/info "stopped slack adapter")
+    (timbre/debug "stopped slack adapter")
     (assoc this :stream nil)))
 
 (defn slack [robot]
