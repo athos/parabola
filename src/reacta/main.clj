@@ -1,6 +1,7 @@
 (ns reacta.main
   (:require [com.stuartsierra.component :as comp]
             [reacta.robot :as robot]
+            [reacta.logger :as logger]
             [reacta.forwarder :as forward]
             [reacta.adapter-loader :as adapters]
             [reacta.script-loader :as scripts]))
@@ -10,17 +11,20 @@
 
 (defn reacta-system []
   (comp/system-map
-    :robot (robot/new-robot {:adapter-prefix ADAPTER_PREFIX
-                             :script-prefix SCRIPT_PREFIX})
+    :logger (logger/new-logger)
+    :robot (comp/using
+             (robot/new-robot {:adapter-prefix ADAPTER_PREFIX
+                               :script-prefix SCRIPT_PREFIX})
+             [:logger])
     :adapter-loader (comp/using
                       (adapters/new-adapter-loader #{:slack})
-                      [:robot])
+                      [:robot :logger])
     :script-loader (comp/using
                      (scripts/new-script-loader)
-                     [:robot])
+                     [:robot :logger])
     :forwarder (comp/using
                  (forward/new-forwarder :slack)
-                 [:robot :adapter-loader])))
+                 [:robot :logger :adapter-loader])))
 
 (defn run [system]
   (adapters/start-adapters (:adapter-loader system)))
