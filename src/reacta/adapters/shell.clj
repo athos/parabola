@@ -25,5 +25,5 @@
     (adapter/emit robot :close))
   (stop [this]))
 
-(defn shell [robot]
+#_(defn shell [robot]
   (->ShellAdapter robot))
