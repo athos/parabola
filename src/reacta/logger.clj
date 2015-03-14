@@ -6,13 +6,14 @@
 (defrecord Logger []
   comp/Lifecycle
   (start [this]
-    (timbre/set-config!
-     [:appenders :standard-out]
-     {:min-level nil
-      :enabled? true
-      :fn (fn [{:keys [error? output]}]
-            (binding [*out* (if error? *err* *out*)]
-              (println output)))})
+    (if (:dev env)
+      (timbre/set-config!
+       [:appenders :standard-out]
+       {:min-level nil
+        :enabled? true
+        :fn (fn [{:keys [error? output]}]
+              (binding [*out* (if error? *err* *out*)]
+                (println output)))}))
     (timbre/info "started logging")
     this)
   (stop [this]
