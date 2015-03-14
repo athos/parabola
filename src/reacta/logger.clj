@@ -17,7 +17,7 @@
     (timbre/info "started logging")
     this)
   (stop [this]
-    (timbre/info "stopping logging ...")
+    (timbre/info "stopped logging")
     this))
 
 (defn new-logger []

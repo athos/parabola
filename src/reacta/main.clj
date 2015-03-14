@@ -17,7 +17,7 @@
                                :script-prefix SCRIPT_PREFIX})
              [:logger])
     :adapter-loader (comp/using
-                      (adapters/new-adapter-loader #{:slack})
+                      (adapters/new-adapter-loader #{:slack :twitter})
                       [:robot :logger])
     :script-loader (comp/using
                      (scripts/new-script-loader)

@@ -15,7 +15,7 @@
         (assoc this :channels channels))
       this))
   (stop [this]
-    (timbre/info "stopping robot ...")
+    (timbre/info "stopped robot")
     (if channels
       (assoc this :channels nil))))
 
