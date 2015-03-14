@@ -4,7 +4,8 @@
             [clj-slack.rtm :as rtm]
             [aleph.http :as http]
             [manifold.stream :as s]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [taoensso.timbre :as timbre]))
 
 (def slack-api-url "https://slack.com/api")
 (def slack-api-token (env :slack-api-token))
@@ -34,10 +35,11 @@
           chans (extract channels)
           users (extract users)
           stream @(http/websocket-client url)]
-      (clojure.pprint/pprint chans)
+      (timbre/debug "init slack adapter")
       (assoc this :stream stream :channels chans :users users :closed? (atom false))))
   (start [this]
     (reset! closed? false)
+    (timbre/debug "starting slack adapter ...")
     (loop []
       (when-not @closed?
         (let [v @(s/try-take! (s/->source stream) 10000)]
@@ -53,6 +55,7 @@
   (stop [this]
     (reset! closed? true)
     (s/close! stream)
+    (timbre/info "stopped slack adapter")
     (assoc this :stream nil)))
 
 (defn slack [robot]
