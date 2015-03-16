@@ -16,8 +16,10 @@
 (defn load-adapters [robot]
   (let [adapter-prefix (get-in robot [:config :adapter-prefix])]
     (->> (for [adapter-ns (bult/namespaces-on-classpath :prefix adapter-prefix)
-               :let [adapter-name (-> (str adapter-ns) (str/split #"[.]") peek)]]
-           [(keyword adapter-name) (load-adapter robot adapter-ns adapter-name)])
+               :let [adapter-name (-> (str adapter-ns) (str/split #"[.]") peek)
+                     adapter (load-adapter robot adapter-ns adapter-name)]
+               :when adapter]
+           [(keyword adapter-name) adapter])
          (into {}))))
 
 (defrecord AdapterLoader [robot adapters]
