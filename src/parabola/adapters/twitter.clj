@@ -1,6 +1,6 @@
-(ns reacta.adapters.twitter
+(ns parabola.adapters.twitter
   (:require [environ.core :refer [env]]
-            [reacta.adapter :as adapter]
+            [parabola.adapter :as adapter]
             [taoensso.timbre :as timbre])
   (:import [twitter4j TwitterFactory Twitter TwitterStream TwitterStreamFactory Status UserStreamListener]
            [twitter4j.conf Configuration ConfigurationBuilder]))

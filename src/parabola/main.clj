@@ -1,15 +1,15 @@
-(ns reacta.main
+(ns parabola.main
   (:require [com.stuartsierra.component :as comp]
-            [reacta.robot :as robot]
-            [reacta.logger :as logger]
-            [reacta.forwarder :as forward]
-            [reacta.adapter-loader :as adapters]
-            [reacta.script-loader :as scripts]))
+            [parabola.robot :as robot]
+            [parabola.logger :as logger]
+            [parabola.forwarder :as forward]
+            [parabola.adapter-loader :as adapters]
+            [parabola.script-loader :as scripts]))
 
-(def ^:const ADAPTER_PREFIX "reacta.adapters")
-(def ^:const SCRIPT_PREFIX "reacta.scripts")
+(def ^:const ADAPTER_PREFIX "parabola.adapters")
+(def ^:const SCRIPT_PREFIX "parabola.scripts")
 
-(defn reacta-system []
+(defn parabola-system []
   (comp/system-map
     :logger (logger/new-logger)
     :robot (comp/using

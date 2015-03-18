@@ -1,4 +1,4 @@
-(ns reacta.reactor
+(ns parabola.reactor
   (:require [clojure.core.async :as a]
             [com.stuartsierra.component :as comp]))
 

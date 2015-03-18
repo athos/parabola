@@ -1,4 +1,4 @@
-(ns reacta.script-loader
+(ns parabola.script-loader
   (:require [clojure.core.async :as async]
             [bultitude.core :refer [namespaces-on-classpath]]
             [com.stuartsierra.component :as comp]))

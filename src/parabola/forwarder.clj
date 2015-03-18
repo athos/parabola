@@ -1,7 +1,7 @@
-(ns reacta.forwarder
+(ns parabola.forwarder
   (:require [clojure.core.async :as a]
             [com.stuartsierra.component :as comp]
-            [reacta.adapter :as adapter]))
+            [parabola.adapter :as adapter]))
 
 (defrecord Forwarder [ch robot adapter-loader adapter-name]
   comp/Lifecycle

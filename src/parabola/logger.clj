@@ -1,4 +1,4 @@
-(ns reacta.logger
+(ns parabola.logger
   (:require [com.stuartsierra.component :as comp]
             [environ.core :refer [env]]
             [taoensso.timbre :as timbre]))

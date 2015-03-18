@@ -1,4 +1,4 @@
-# reacta
+# parabola
 
 Hubot-like chat bot framework powered by Clojure/core.async
 

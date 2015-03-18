@@ -1,6 +1,6 @@
-(ns reacta.adapters.slack
+(ns parabola.adapters.slack
   (:require [environ.core :refer [env]]
-            [reacta.adapter :as adapter]
+            [parabola.adapter :as adapter]
             [clj-slack.rtm :as rtm]
             [aleph.http :as http]
             [manifold.stream :as s]

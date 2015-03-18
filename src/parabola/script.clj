@@ -1,6 +1,6 @@
-(ns reacta.script
-  (:require [reacta.reactor :as r]
-            [reacta.robot :as robot]))
+(ns parabola.script
+  (:require [parabola.reactor :as r]
+            [parabola.robot :as robot]))
 
 (defn emit-reactor [event robot ch bindings body]
   `(r/->Reactor ~event ~robot ~ch (fn ~bindings ~@body)))

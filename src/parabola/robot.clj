@@ -1,4 +1,4 @@
-(ns reacta.robot
+(ns parabola.robot
   (:require [com.stuartsierra.component :as comp]
             [clojure.core.async :as a]
             [taoensso.timbre :as timbre]))

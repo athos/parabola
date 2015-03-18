@@ -1,5 +1,5 @@
-(ns reacta.adapter-loader
-  (:require [reacta.adapter :as adapter]
+(ns parabola.adapter-loader
+  (:require [parabola.adapter :as adapter]
             [com.stuartsierra.component :as comp]
             [bultitude.core :as bult]
             [taoensso.timbre :as timbre]

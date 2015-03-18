@@ -1,5 +1,5 @@
-(ns reacta.adapters.shell
-  (:require [reacta.adapter :as adapter]))
+(ns parabola.adapters.shell
+  (:require [parabola.adapter :as adapter]))
 
 (defn print-prompt []
   (print "=> ")

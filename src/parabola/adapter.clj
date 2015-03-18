@@ -1,6 +1,6 @@
-(ns reacta.adapter
+(ns parabola.adapter
   (:refer-clojure :exclude [send])
-  (:require [reacta.robot :as robot]))
+  (:require [parabola.robot :as robot]))
 
 (defprotocol Adapter
   (send [this msg])
