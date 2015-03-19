@@ -1,7 +1,8 @@
 (ns parabola.script-loader
   (:require [clojure.core.async :as async]
             [bultitude.core :refer [namespaces-on-classpath]]
-            [com.stuartsierra.component :as comp]))
+            [com.stuartsierra.component :as comp]
+            [taoensso.timbre :as timbre]))
 
 (defrecord Script [ns reactors]
   comp/Lifecycle
@@ -28,15 +29,17 @@
   comp/Lifecycle
   (start [this]
     (if-not scripts
-      (let [scripts (load-scripts robot)]
-        (doseq [script scripts]
-          (comp/start script))
-        (assoc this :scripts scripts))
+      (do (timbre/info "script loader started")
+          (let [scripts (load-scripts robot)]
+            (doseq [script scripts]
+              (comp/start script))
+            (assoc this :scripts scripts)))
       this))
   (stop [this]
     (if scripts
       (do (doseq [script scripts]
             (comp/stop script))
+          (timbre/info "script loader stopped")
           (assoc this :scripts nil))
       this)))
 

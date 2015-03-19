@@ -1,7 +1,8 @@
 (ns parabola.forwarder
   (:require [clojure.core.async :as a]
             [com.stuartsierra.component :as comp]
-            [parabola.adapter :as adapter]))
+            [parabola.adapter :as adapter]
+            [taoensso.timbre :as timbre]))
 
 (defrecord Forwarder [ch robot adapter-loader adapter-name]
   comp/Lifecycle
@@ -9,8 +10,10 @@
     (if-not ch
       (let [ch (a/chan)]
         (a/go-loop []
+          (timbre/info "forwarder started")
           (let [[msg src] (a/alts! [ch (-> robot :channels :from-reactors)])]
             (when-not (= src ch)
+              (timbre/debug (str "message forwarded: " msg))
               (adapter/send (get-in adapter-loader [:adapters adapter-name]) msg)
               (recur))))
         (assoc this :ch ch))
@@ -18,6 +21,7 @@
   (stop [this]
     (if ch
       (do (a/>!! ch ::stop)
+          (timbre/info "forwarder stopped")
           (assoc this :ch nil))
       this)))
 
