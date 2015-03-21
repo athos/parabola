@@ -14,8 +14,8 @@
   (start [this])
   (stop [this]))
 
-(defn emit [robot event & more]
-  (apply robot/emit robot event more))
+(defn emit [robot event msg]
+  (robot/emit robot event msg))
 
 (defn receive [robot msg]
-  (robot/emit robot :message :content msg))
+  (emit robot :message msg))

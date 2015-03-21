@@ -2,7 +2,7 @@
   (:require [environ.core :refer [env]]
             [parabola.adapter :as adapter]
             [taoensso.timbre :as timbre])
-  (:import [twitter4j TwitterFactory Twitter TwitterStream TwitterStreamFactory Status UserStreamListener]
+  (:import [twitter4j TwitterFactory Twitter TwitterStream TwitterStreamFactory Status UserStreamListener User]
            [twitter4j.conf Configuration ConfigurationBuilder]))
 
 (defn make-config [consumer-key consumer-secret access-token access-token-secret]
@@ -18,8 +18,13 @@
     (onDeletionNotice [this _])
     (onScrubGeo [this _ _])
     (^void onStatus [this ^Status status]
-      (adapter/receive robot (.getText status))
-      (timbre/info (str "message received: " (.getText status))))
+      (let [^User user (.getUser status)
+            msg {:adapter :twitter
+                 :id (.getId status)
+                 :text (.getText status)
+                 :user {:id (.getId user), :name (.getName user)}}]
+        (adapter/receive robot msg)
+        (timbre/info (str "message received: " msg))))
     (onTrackLimitationNotice [this _])
     (onException [this _])
     (onBlock [this _ _])

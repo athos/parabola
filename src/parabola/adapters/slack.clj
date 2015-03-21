@@ -44,11 +44,16 @@
       (when-not @closed?
         (let [v @(s/try-take! (s/->source stream) 10000)]
           (if v
-            (let [json (json/read-str v :key-fn keyword)]
-              (case (:type json)
+            (let [{:keys [ts type text user]} (json/read-str v :key-fn keyword)]
+              (case type
                 "message"
-                #_=> (do (timbre/info (str "message received: " (:text json)))
-                         (adapter/receive robot (:text json)))
+                #_=> (let [msg {:adapter :slack
+                                :id ts
+                                :text text
+                                :user {:id user
+                                       :name (get-in users [:id->name user])}}]
+                       (adapter/receive robot msg)
+                       (timbre/info (str "message received: " msg)))
                 nil)
               (recur))
             (recur))))))

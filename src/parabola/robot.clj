@@ -23,8 +23,8 @@
 (defn new-robot [config]
   (map->Robot {:config config}))
 
-(defn emit [robot event & more]
-  (a/>!! (-> robot :channels :to-reactors) (apply array-map :type event more))
+(defn emit [robot event msg]
+  (a/>!! (-> robot :channels :to-reactors) (assoc msg :type event))
   nil)
 
 (defn react [robot msg]
