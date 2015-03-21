@@ -14,7 +14,7 @@
           (let [[msg src] (a/alts! [ch (-> robot :channels :from-reactors)])]
             (when-not (= src ch)
               (timbre/debug (str "message forwarded: " msg))
-              (adapter/send (get-in adapter-loader [:adapters adapter-name]) msg)
+              (adapter/send (get-in adapter-loader [:adapters adapter-name :adapter]) msg)
               (recur))))
         (assoc this :ch ch))
       this))
