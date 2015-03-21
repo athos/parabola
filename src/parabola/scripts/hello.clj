@@ -6,7 +6,7 @@
 (defreactor :connected [robot message]
   (timbre/info "connected!"))
 
-(defreactor #"@reacta_test ping" [robot]
+(defreactor #"ping" [robot]
   (react robot {:type :message :content "pong"}))
 
 (defreactor #"hello" [robot]
