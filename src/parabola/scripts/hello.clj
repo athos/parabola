@@ -1,9 +1,10 @@
 (ns parabola.scripts.hello
   (:require [parabola.script :refer [defreactor react]]
-            [clojure.java.shell :refer [sh]]))
+            [clojure.java.shell :refer [sh]]
+            [taoensso.timbre :as timbre]))
 
 (defreactor :connected [robot message]
-  (println "connected!"))
+  (timbre/info "connected!"))
 
 (defreactor #"@reacta_test ping" [robot]
   (react robot {:type :message :content "pong"}))
@@ -15,4 +16,4 @@
   (react robot {:type :message :content (clojure.string/trim-newline (:out (sh "date")))}))
 
 (defreactor :close [robot message]
-  (println "closed!"))
+  (timbre/info "closed!"))

@@ -19,7 +19,7 @@
     (onScrubGeo [this _ _])
     (^void onStatus [this ^Status status]
       (adapter/receive robot (.getText status))
-      (println status))
+      (timbre/info (str "message received: " (.getText status))))
     (onTrackLimitationNotice [this _])
     (onException [this _])
     (onBlock [this _ _])
@@ -43,8 +43,8 @@
 (defrecord TwitterAdapter [robot ^Twitter twitter ^TwitterStream stream]
   adapter/Adapter
   (send [this msg]
-    (println "sending:" (:content msg))
-    (.updateStatus twitter ^String (:content msg)))
+    (.updateStatus twitter ^String (:content msg))
+    (timbre/info (str "message sent: " msg)))
   adapter/Lifecycle
   (init [this]
     (let [^Configuration config (make-config (env :twitter-consumer-key)

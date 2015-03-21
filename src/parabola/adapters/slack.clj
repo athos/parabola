@@ -26,8 +26,8 @@
                          :type :message
                          :channel (get-in channels [:name->id "random"])
                          :text (:content msg)}]
-               (println "seinding message:" json)
-               (s/try-put! (s/->sink stream) (json/write-str json) 10000))
+               (s/try-put! (s/->sink stream) (json/write-str json) 10000)
+               (timbre/debug (str "message sent: " json)))
         nil)))
   adapter/Lifecycle
   (init [this]
@@ -47,7 +47,7 @@
             (let [json (json/read-str v :key-fn keyword)]
               (case (:type json)
                 "message"
-                #_=> (do (prn "received message:" (:text json))
+                #_=> (do (timbre/info (str "message received: " (:text json)))
                          (adapter/receive robot (:text json)))
                 nil)
               (recur))
