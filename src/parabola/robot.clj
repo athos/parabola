@@ -9,7 +9,7 @@
     (if-not channels
       (let [ch (a/chan)
             channels {:to-reactors ch,
-                      :reactors-pub (a/pub ch :type)
+                      :reactors-mult (a/mult ch)
                       :from-reactors (a/chan 10)}]
         (timbre/info "started robot")
         (assoc this :channels channels))

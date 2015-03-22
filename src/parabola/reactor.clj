@@ -13,11 +13,13 @@
   comp/Lifecycle
   (start [this]
     (timbre/info (str "reactor started for event " event))
-    (a/sub (-> robot :channels :reactors-pub) event ch)
+    (a/tap (-> robot :channels :reactors-mult) ch)
     (a/go-loop []
       (let [msg (a/<! ch)]
         (timbre/debug "message received: " msg)
-        (when ((wrap proc) msg)
+        (if (= (:type msg) event)
+          (when ((wrap proc) msg)
+            (recur))
           (recur))))
     this)
   (stop [this]
