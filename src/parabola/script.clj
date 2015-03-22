@@ -1,20 +1,30 @@
-(ns parabola.script
-  (:require [parabola.reactor :as r]
-            [parabola.robot :as robot]))
+(ns parabola.script)
 
-(defn emit-reactor [event robot ch bindings body]
-  `(r/->Reactor ~event ~robot ~ch (fn ~bindings ~@body)))
+(defn reactors [& rs]
+  (fn [msg]
+    (some #(% msg) rs)))
 
-(defmacro defreactor [stimulus bindings & body]
-  (let [robot (first bindings)
-        ch (gensym 'ch)]
-   `(defn ~(with-meta (gensym 'reactor) {:reactor true}) [~robot ~ch]
-      ~(if (instance? java.util.regex.Pattern stimulus)
-         (emit-reactor :message robot ch ['&message]
-           `((let [[match# ~@(rest bindings)] (re-find ~stimulus (:text ~'&message))]
-               (when-not (nil? match#)
-                 ~@body))))
-         (emit-reactor stimulus robot ch (vec (rest bindings)) body)))))
+(defmacro defreactors [name & reactors]
+  `(def ~(with-meta name {:reactor true})
+     (reactors ~@reactors)))
 
-(defn react [robot res]
-  (robot/react robot res))
+(defprotocol Response
+  (respond [this msg]))
+
+(defmacro message [re arg & body]
+  `(fn [msg#]
+     (when-let [m# (and (= (:type msg#) :message)
+                        (re-matches ~re (:text msg#)))]
+       (let [~arg (assoc msg# :matches m#)]
+         (respond (do ~@body) msg#)))))
+
+(extend-protocol Response
+  Object
+  (respond [this _] this)
+  String
+  (respond [content _]
+    {:type :message
+     :content content})
+  clojure.lang.Fn
+  (respond [f msg]
+    (respond (f msg) msg)))
