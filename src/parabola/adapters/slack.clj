@@ -50,12 +50,14 @@
         (let [v @(s/try-take! (s/->source stream) 10000)]
           (timbre/debug (str "slack adapter received: " v))
           (if v
-            (let [{:keys [ts type text user]} (json/read-str v :key-fn keyword)]
+            (let [{:keys [ts type channel text user]} (json/read-str v :key-fn keyword)]
               (case type
                 "message"
                 #_=> (let [msg {:adapter :slack
                                 :id ts
                                 :text text
+                                :room {:id channel
+                                       :name (get-in channels [:id->name channel])}
                                 :user {:id user
                                        :name (get-in users [:id->name user])}}]
                        (adapter/receive robot msg)

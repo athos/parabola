@@ -27,6 +27,6 @@
   (a/>!! (-> robot :channels :to-reactors) (assoc msg :type event))
   nil)
 
-(defn react [robot msg]
-  (a/>!! (-> robot :channels :from-reactors) msg)
+(defn react [robot res]
+  (a/>!! (-> robot :channels :from-reactors) res)
   nil)

@@ -4,18 +4,20 @@
             [parabola.adapter :as adapter]
             [taoensso.timbre :as timbre]))
 
-(defrecord Forwarder [ch robot adapter-loader adapter-name]
+(defrecord Forwarder [ch robot adapter-loader]
   comp/Lifecycle
   (start [this]
     (if-not ch
       (let [ch (a/chan)]
         (timbre/info "forwarder started")
         (a/go-loop []
-          (let [[msg src] (a/alts! [ch (-> robot :channels :from-reactors)])]
+          (let [[res src] (a/alts! [ch (-> robot :channels :from-reactors)])]
             (when-not (= src ch)
-              (timbre/debug (str "message forwarded: " msg))
-              (adapter/send (get-in adapter-loader [:adapters adapter-name :adapter]) msg)
-              (recur))))
+              (let [adapter (or (:adapter res)
+                                (get-in res [:message :adapter]))]
+                (timbre/debug (str "response forwarded to " adapter ": " res))
+                (adapter/send (get-in adapter-loader [:adapters adapter :adapter]) res)
+                (recur)))))
         (assoc this :ch ch))
       this))
   (stop [this]
@@ -25,5 +27,5 @@
           (assoc this :ch nil))
       this)))
 
-(defn new-forwarder [adapter-name]
-  (map->Forwarder {:adapter-name adapter-name}))
+(defn new-forwarder []
+  (map->Forwarder {}))

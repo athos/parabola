@@ -23,5 +23,5 @@
                      (scripts/new-script-loader)
                      [:robot :logger])
     :forwarder (comp/using
-                 (forward/new-forwarder :slack)
+                 (forward/new-forwarder)
                  [:robot :logger :adapter-loader])))
