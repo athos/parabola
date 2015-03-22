@@ -1,4 +1,5 @@
 (ns parabola.adapters.slack
+  (refer-clojure :exclude [send])
   (:require [environ.core :refer [env]]
             [parabola.adapter :as adapter]
             [clj-slack.rtm :as rtm]
@@ -16,18 +17,22 @@
     {:id->name m
      :name->id (zipmap (vals m) (keys m))}))
 
+(defn send [stream type msg]
+  (let [json (assoc msg
+                    :id (rand-int Integer/MAX_VALUE)
+                    :type type)]
+    (s/try-put! (s/->sink stream) (json/write-str json) 10000)
+    (timbre/debug (str (name type) " sent: " json))))
+
 (defrecord SlackAdapter [robot stream channels users closed?]
   adapter/Adapter
   (send [this msg]
     (when-not @closed?
       (case (:type msg)
         :message
-        #_=> (let [json {:id (rand-int Integer/MAX_VALUE)
-                         :type :message
-                         :channel (get-in channels [:name->id "random"])
-                         :text (:content msg)}]
-               (s/try-put! (s/->sink stream) (json/write-str json) 10000)
-               (timbre/debug (str "message sent: " json)))
+        #_=> (let [msg {:channel (get-in channels [:name->id "random"])
+                        :text (:content msg)}]
+               (send stream :message msg))
         nil)))
   adapter/Lifecycle
   (init [this]
@@ -43,6 +48,7 @@
     (loop []
       (when-not @closed?
         (let [v @(s/try-take! (s/->source stream) 10000)]
+          (timbre/debug (str "slack adapter received: " v))
           (if v
             (let [{:keys [ts type text user]} (json/read-str v :key-fn keyword)]
               (case type
@@ -56,7 +62,8 @@
                        (timbre/info (str "message received: " msg)))
                 nil)
               (recur))
-            (recur))))))
+            (do (send stream :ping {})
+                (recur)))))))
   (stop [this]
     (reset! closed? true)
     (s/close! stream)
