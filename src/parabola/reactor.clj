@@ -5,9 +5,9 @@
             [parabola.robot :as robot]))
 
 (defn wrap [robot proc]
-  (fn [message]
-    (when-not (= (:type message) ::stop)
-      (let [res (proc message)]
+  (fn [msg]
+    (when-not (= (:type msg) ::stop)
+      (let [res (proc msg)]
         (cond (map? res)
               #_=> (robot/react robot res)
               (seq? res)
