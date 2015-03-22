@@ -9,8 +9,8 @@
   (start [this]
     (if-not ch
       (let [ch (a/chan)]
+        (timbre/info "forwarder started")
         (a/go-loop []
-          (timbre/info "forwarder started")
           (let [[msg src] (a/alts! [ch (-> robot :channels :from-reactors)])]
             (when-not (= src ch)
               (timbre/debug (str "message forwarded: " msg))
