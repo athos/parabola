@@ -1,28 +1,32 @@
 (ns parabola.reactor
   (:require [clojure.core.async :as a]
             [com.stuartsierra.component :as comp]
-            [taoensso.timbre :as timbre]))
+            [taoensso.timbre :as timbre]
+            [parabola.robot :as robot]))
 
-(defn wrap [proc]
+(defn wrap [robot proc]
   (fn [message]
     (when-not (= (:type message) ::stop)
-      (do (proc message)
-          true))))
+      (let [res (proc message)]
+        (cond (map? res)
+              #_=> (robot/react robot res)
+              (seq? res)
+              #_=> (doseq [res res]
+                     (robot/react robot res))))
+      true)))
 
-(defrecord Reactor [event robot ch proc]
+(defrecord Reactor [name robot ch proc]
   comp/Lifecycle
   (start [this]
-    (timbre/info (str "reactor started for event " event))
+    (timbre/info (str "reactor (" name ") started"))
     (a/tap (-> robot :channels :reactors-mult) ch)
     (a/go-loop []
       (let [msg (a/<! ch)]
         (timbre/debug "message received: " msg)
-        (if (= (:type msg) event)
-          (when ((wrap proc) msg)
-            (recur))
+        (when ((wrap robot proc) msg)
           (recur))))
     this)
   (stop [this]
-    (timbre/info (str "reactor stopped for event " event))
     (a/>!! ch {:type ::stop})
+    (timbre/info (str "reactor (" name ") stopped"))
     this))

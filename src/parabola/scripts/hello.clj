@@ -3,17 +3,32 @@
             [clojure.java.shell :refer [sh]]
             [taoensso.timbre :as timbre]))
 
-(defreactor :connected [robot message]
-  (timbre/info "connected!"))
+(defn ^:reactor log-connected [msg]
+  (when (= (:type msg) :connected)
+    (timbre/info "connected!")))
 
-(defreactor #"ping" [robot]
-  (react robot {:type :message :content "pong" :message &message}))
+(defn ^:reactor respond-ping [msg]
+  (when (and (= (:type msg) :message)
+             (re-matches #"ping" (:text msg)))
+    {:type :message
+     :content "pong"
+     :message msg}))
 
-(defreactor #"hello" [robot]
-  (react robot {:type :message :content "hello" :message &message}))
+(defn ^:reactor respond-hello [msg]
+  (when (and (= (:type msg) :message)
+             (re-matches #"hello" (:text msg)))
+    {:type :message
+     :content "hello"
+     :message msg}))
 
-(defreactor #"time" [robot]
-  (react robot {:type :message :content (clojure.string/trim-newline (:out (sh "date"))) :message &message}))
+(defn ^:reactor respond-time [msg]
+  (when (and (= (:type msg) :message)
+             (re-matches #"time" (:text msg)))
+    (let [content (clojure.string/trim-newline (:out (sh "date")))]
+      {:type :message
+       :content content
+       :message msg})))
 
-(defreactor :close [robot message]
-  (timbre/info "closed!"))
+(defn ^:reactor log-closed [msg]
+  (when (= (:type msg) :close)
+    (timbre/info "closed!")))

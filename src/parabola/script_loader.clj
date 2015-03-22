@@ -2,7 +2,8 @@
   (:require [clojure.core.async :as async]
             [bultitude.core :refer [namespaces-on-classpath]]
             [com.stuartsierra.component :as comp]
-            [taoensso.timbre :as timbre]))
+            [taoensso.timbre :as timbre]
+            [parabola.reactor :as reactor]))
 
 (defrecord Script [ns reactors]
   comp/Lifecycle
@@ -16,8 +17,10 @@
     this))
 
 (defn script-reactors [robot ns-name]
-  (vec (for [reactor (filter (comp :reactor meta) (vals (ns-publics ns-name)))]
-         (reactor robot (async/chan 2)))))
+  (->> (for [v (vals (ns-publics ns-name))
+             :when (:reactor (meta v))]
+         (reactor/->Reactor (:name (meta v)) robot (async/chan 2) @v))
+       vec))
 
 (defn load-scripts [robot]
   (let [prefix (-> robot :config :script-prefix)]
