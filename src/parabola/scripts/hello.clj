@@ -11,23 +11,20 @@
   (when (and (= (:type msg) :message)
              (re-matches #"ping" (:text msg)))
     {:type :message
-     :content "pong"
-     :message msg}))
+     :content "pong"}))
 
 (defn ^:reactor respond-hello [msg]
   (when (and (= (:type msg) :message)
              (re-matches #"hello" (:text msg)))
     {:type :message
-     :content "hello"
-     :message msg}))
+     :content "hello"}))
 
 (defn ^:reactor respond-time [msg]
   (when (and (= (:type msg) :message)
              (re-matches #"time" (:text msg)))
     (let [content (clojure.string/trim-newline (:out (sh "date")))]
       {:type :message
-       :content content
-       :message msg})))
+       :content content})))
 
 (defn ^:reactor log-closed [msg]
   (when (= (:type msg) :close)

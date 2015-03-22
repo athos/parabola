@@ -9,10 +9,10 @@
     (when-not (= (:type msg) ::stop)
       (let [res (proc msg)]
         (cond (map? res)
-              #_=> (robot/react robot res)
+              #_=> (robot/react robot (assoc res :message msg))
               (seq? res)
               #_=> (doseq [res res]
-                     (robot/react robot res))))
+                     (robot/react robot (assoc res :message msg)))))
       true)))
 
 (defrecord Reactor [name robot ch proc]
