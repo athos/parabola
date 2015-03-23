@@ -61,7 +61,7 @@
                                 :user {:id user
                                        :name (get-in users [:id->name user])}}]
                        (adapter/receive robot msg)
-                       (timbre/info (str "message received: " msg)))
+                       (timbre/debug (str "message received: " msg)))
                 nil)
               (recur))
             (do (send stream :ping {})
