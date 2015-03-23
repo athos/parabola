@@ -16,3 +16,11 @@
        (let [~arg (assoc msg# :matches m#)]
          (respond (do ~@body) msg#)))))
 
+(defmacro context [re arg & rs]
+  `(let [re# (re-pattern (str "^" ~re "(.*)$"))]
+     (fn [msg#]
+       (when-let [m# (and (= (:type msg#) :message)
+                          (re-matches re# (:text msg#)))]
+         (let [~arg (assoc msg# :matches (pop m#))
+               msg# (assoc msg# :text (peek m#))]
+           ((reactors ~@rs) msg#))))))
