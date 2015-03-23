@@ -11,7 +11,7 @@
 
 (defreactors example-reactors
   (message #"ping" []
-    "ping")
+    "pong")
   (message #"time" []
     (clojure.string/trim-newline (:out (sh "date"))))
   (message #"hello" {{:keys [name]} :user}
