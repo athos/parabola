@@ -22,7 +22,7 @@
             msg {:adapter :twitter
                  :id (.getId status)
                  :text (.getText status)
-                 :user {:id (.getId user), :name (.getName user)}}]
+                 :user {:id (.getId user), :name (.getScreenName user)}}]
         (adapter/receive robot msg)
         (timbre/info (str "message received: " msg))))
     (onTrackLimitationNotice [this _])
