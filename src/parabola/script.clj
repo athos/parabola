@@ -1,5 +1,5 @@
 (ns parabola.script
-  (:require [parabola.response]))
+  (:require [parabola.response :refer [respond]]))
 
 (defn reactors [& rs]
   (fn [msg]
